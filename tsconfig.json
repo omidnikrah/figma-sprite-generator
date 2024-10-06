@@ -4,7 +4,12 @@
     "typeRoots": ["node_modules/@figma", "node_modules/@types"],
     "jsx": "react-jsx",
     "jsxFactory": null,
-    "jsxImportSource": "preact"
+    "jsxImportSource": "preact",
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["src/*"],
+      "@build/*": ["build/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

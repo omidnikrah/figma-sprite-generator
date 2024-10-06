@@ -1,0 +1,41 @@
+@import url("https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #d9d9d9;
+  color: #1a1b20;
+  padding: 0 24px 24px;
+  font-family: "Afacad", sans-serif;
+}
+
+.fade-appear,
+.fade-enter {
+  opacity: 0;
+  transform: scale(0.6) translateY(10px);
+}
+
+.fade-appear-active,
+.fade-enter-active,
+.fade-appear-done,
+.fade-enter-done {
+  opacity: 1;
+  transform: scale(1) translateY(0px);
+}
+
+.fade-exit {
+  opacity: 1;
+  transform: scale(1) translateY(0px);
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: scale(0.6) translateY(-10px);
+}
+
+.fade-exit-done {
+  opacity: 0;
+  transform: scale(0.6) translateY(-10px);
+}

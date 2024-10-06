@@ -9,7 +9,7 @@
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:css-import-order/recommended",
-    "plugin:preact/recommended",
+    "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:import/warnings",
     "plugin:import/typescript",
@@ -24,9 +24,11 @@
   "parser": "@typescript-eslint/parser",
   "plugins": [
     "@typescript-eslint",
+    "react",
     "prettier"
   ],
   "rules": {
+    "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
@@ -38,14 +40,21 @@
     "import/order": [
       "error",
       {
-        "newlines-between": "always",
+        "groups": [
+          "builtin",
+          "external",
+          ["parent", "sibling", "index"]
+        ],
         "pathGroups": [
           {
-            "pattern": "@src/assets/**",
-            "group": "object",
+            "pattern": "@src/**",
+            "group": "parent",
             "position": "after"
           }
-        ]
+        ],
+        "pathGroupsExcludedImportTypes": ["builtin"],
+        "newlines-between": "always",
+        "alphabetize": { "order": "asc", "caseInsensitive": true }
       }
     ]
   }
