@@ -60,6 +60,8 @@ jobs:
           mkdir -p /tmp/build
           mkdir -p /tmp/build/${PLUGIN_NAME}-${PLUGIN_VERSION}
           mv ./build/* /tmp/build/${PLUGIN_NAME}-${PLUGIN_VERSION}/
+          sed -i 's|build/|./|g' ./manifest.json
+          mv ./manifest.json /tmp/build/${PLUGIN_NAME}-${PLUGIN_VERSION}/
           cd /tmp/build
           zip -r ${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}.zip ${PLUGIN_NAME}-${PLUGIN_VERSION}
 
