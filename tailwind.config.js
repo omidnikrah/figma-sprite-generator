@@ -5,7 +5,7 @@ export default {
     colors: {
       black: "#1A1B20",
       white: "#FFFFFF",
-      red: "db2f2f",
+      red: "#db2f2f",
       transparent: "transparent",
     },
     extend: {
