@@ -30,7 +30,7 @@
         "@semantic-release/git",
         {
           "assets": ["package.json", "CHANGELOG.md"],
-          "message": "💥 chore: ${nextRelease.version} [skip ci]"
+          "message": "💥 chore: v${nextRelease.version} [skip ci]"
         }
       ]
     ],
