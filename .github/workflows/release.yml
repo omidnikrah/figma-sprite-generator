@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.8.1'
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm install --legacy-peer-deps
+
+      - name: Build application
+        run: npm run build
+
+      - name: Bump version and release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+
+      - name: Retrieve plugin version and name
+        id: get_version
+        run: |
+          echo "PLUGIN_VERSION=$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
+          echo "PLUGIN_NAME=$(node -p -e "require('./package.json').name")" >> $GITHUB_ENV
+
+      - name: Zip build files in a temporary directory
+        run: |
+          mkdir -p /tmp/build
+          zip -r /tmp/build/${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}.zip ./build
+
+      - name: Create release and attach zip file
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG=v${{ env.PLUGIN_VERSION }}
+          RELEASE_TITLE="v${{ env.PLUGIN_VERSION }}"
+          DESCRIPTION="Release for plugin ${{ env.PLUGIN_NAME }}. Version: ${{ env.PLUGIN_VERSION }}. [Download latest build](https://github.com/${{ github.repository }}/raw/builds/${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}.zip)"
+          
+          # Create a GitHub release
+          gh release create $TAG /tmp/build/${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}.zip \
+            --title "$RELEASE_TITLE" \
+            --notes "$DESCRIPTION"
+        shell: bash
