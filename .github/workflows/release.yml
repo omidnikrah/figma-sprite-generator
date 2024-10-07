@@ -78,3 +78,19 @@ jobs:
             --title "$RELEASE_TITLE" \
             --notes "$DESCRIPTION"
         shell: bash
+
+      - name: Update README with new download URL
+        if: ${{ env.NEW_VERSION_RELEASED == 'true' }}
+        run: |
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/v${PLUGIN_VERSION}/${PLUGIN_NAME}-${PLUGIN_VERSION}.zip"
+          sed -i 's|https://github.com/.*/releases/download/.*\.zip|'"$DOWNLOAD_URL"'|' README.md
+
+      # Commit and push the updated README.md file
+      - name: Commit and push updated README
+        if: ${{ env.NEW_VERSION_RELEASED == 'true' }}
+        run: |
+          git config user.name "GitHub Actions[bot]"
+          git config user.email "actions@github.com"
+          git add README.md
+          git commit -m "📝 docs: update download link in README to v${PLUGIN_VERSION}"
+          git push
