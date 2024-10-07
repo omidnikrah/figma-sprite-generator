@@ -48,7 +48,10 @@ jobs:
       - name: Zip build files in a temporary directory
         run: |
           mkdir -p /tmp/build
-          zip -r /tmp/build/${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}.zip ./build
+          mkdir -p /tmp/build/${PLUGIN_NAME}-${PLUGIN_VERSION}
+          mv ./build/* /tmp/build/${PLUGIN_NAME}-${PLUGIN_VERSION}/
+          cd /tmp/build
+          zip -r ${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}.zip ${PLUGIN_NAME}-${PLUGIN_VERSION}
 
       - name: Create release and attach zip file
         env:
