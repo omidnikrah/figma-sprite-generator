@@ -59,7 +59,8 @@ jobs:
         run: |
           TAG=v${{ env.PLUGIN_VERSION }}
           RELEASE_TITLE="v${{ env.PLUGIN_VERSION }}"
-          DESCRIPTION="Release for plugin ${{ env.PLUGIN_NAME }}. Version: ${{ env.PLUGIN_VERSION }}. [Download latest build](https://github.com/${{ github.repository }}/raw/builds/${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}.zip)"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/${PLUGIN_NAME}-${PLUGIN_VERSION}.zip"
+          DESCRIPTION="Release for plugin ${{ env.PLUGIN_NAME }}. Version: ${{ env.PLUGIN_VERSION }}. [Download latest build](${DOWNLOAD_URL})"
           
           # Create a GitHub release
           gh release create $TAG /tmp/build/${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}.zip \
