@@ -57,6 +57,8 @@
     "id": "1424139256012895014",
     "name": "GoodWay Sprite",
     "main": "src/plugin-core.ts",
-    "ui": "src/plugin-ui.tsx"
+    "ui": "src/plugin-ui.tsx",
+    "networkAccess": { "allowedDomains": ["https://fonts.googleapis.com"] },
+    "documentAccess": "dynamic-page"
   }
 }
