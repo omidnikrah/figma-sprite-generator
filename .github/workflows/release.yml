@@ -23,7 +23,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-modules-
 
@@ -35,17 +35,27 @@ jobs:
         run: npm run build
 
       - name: Bump version and release
+        id: semantic_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+        run: |
+          npx semantic-release | tee semantic_release_output.txt
+          if grep -q "Published release" semantic_release_output.txt; then
+            echo "NEW_VERSION_RELEASED=true" >> $GITHUB_ENV
+          else
+            echo "NEW_VERSION_RELEASED=false" >> $GITHUB_ENV
+          fi
+        continue-on-error: true
 
       - name: Retrieve plugin version and name
+        if: ${{ env.NEW_VERSION_RELEASED == 'true' }}
         id: get_version
         run: |
           echo "PLUGIN_VERSION=$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
           echo "PLUGIN_NAME=$(node -p -e "require('./package.json').name")" >> $GITHUB_ENV
 
       - name: Zip build files in a temporary directory
+        if: ${{ env.NEW_VERSION_RELEASED == 'true' }}
         run: |
           mkdir -p /tmp/build
           mkdir -p /tmp/build/${PLUGIN_NAME}-${PLUGIN_VERSION}
@@ -54,6 +64,7 @@ jobs:
           zip -r ${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}.zip ${PLUGIN_NAME}-${PLUGIN_VERSION}
 
       - name: Create release and attach zip file
+        if: ${{ env.NEW_VERSION_RELEASED == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
