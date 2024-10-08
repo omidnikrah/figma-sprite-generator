@@ -7,14 +7,14 @@
 <p align="center">Easily generate sprite sheets and JSON metadata from icons selected in Figma.</p>
 
 <p align="center">
-    <a href="https://github.com/omidnikrah/figma-sprite-generator/releases/download/v1.0.1/figma-sprite-generator-1.0.1.zip">
-      <img src="https://img.shields.io/badge/Download%20Figma%20Plugin-F24E1E?logo=figma&logoColor=white" alt="Figma Plugin" height="25" />
+    <a href="https://www.figma.com/community/plugin/1424139256012895014/goodway-sprite">
+      <img src="https://img.shields.io/badge/Install%20Figma%20Sprite%20Generator-F24E1E?logo=figma&logoColor=white" alt="Figma Plugin" height="25" />
     </a>
 </p>
 
 <h2></h2>
 
-### ⚡ Quick Installation Guide:
+### ⚙️ Manual Installation Guide:
 
 1. **[Download the plugin .zip file](https://github.com/your-username/your-repo/releases/latest/download/your-plugin-name.zip)** to your computer.
 2. Unzip the file to reveal the plugin folder.
