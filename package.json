@@ -1,6 +1,6 @@
 {
   "name": "figma-sprite-generator",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "dependencies": {
     "@create-figma-plugin/ui": "^3.2.0",
     "@create-figma-plugin/utilities": "^3.2.0",
@@ -58,7 +58,11 @@
     "name": "GoodWay Sprite",
     "main": "src/plugin-core.ts",
     "ui": "src/plugin-ui.tsx",
-    "networkAccess": { "allowedDomains": ["https://fonts.googleapis.com"] },
+    "networkAccess": {
+      "allowedDomains": [
+        "https://fonts.googleapis.com"
+      ]
+    },
     "documentAccess": "dynamic-page"
   }
 }
