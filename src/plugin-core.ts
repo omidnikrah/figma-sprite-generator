@@ -25,11 +25,10 @@ const handleCreateSprite = async () => {
 };
 
 const processSelectedNodes = async (selectedNodes: readonly SceneNode[]) => {
-  let totalWidth = 0;
-  let maxHeight = 0;
   const iconsData: IconsData = {};
   const exportedImages: ExportedImages = [];
   let hasDuplicatedNames = false;
+  let index = 0;
 
   for (const node of selectedNodes) {
     if ("exportAsync" in node && "name" in node) {
@@ -42,16 +41,17 @@ const processSelectedNodes = async (selectedNodes: readonly SceneNode[]) => {
         break;
       }
 
+      const row = Math.floor(index / Layout.ICONS_PER_ROW);
+      const col = index % Layout.ICONS_PER_ROW;
+
       iconsData[node.name] = {
-        x: totalWidth + Layout.ICONS_PADDING,
-        y: Layout.ICONS_PADDING,
+        x: col * (width + Layout.ICONS_PADDING),
+        y: row * (height + Layout.ICONS_PADDING),
         width,
         height,
       };
-
-      totalWidth += width + Layout.ICONS_PADDING;
-      maxHeight = Math.max(maxHeight, height + Layout.ICONS_PADDING);
     }
+    index++;
   }
 
   return { exportedImages, iconsData, hasDuplicatedNames };
