@@ -16,7 +16,7 @@
 
 ### ⚙️ Manual Installation Guide:
 
-1. **[Download the plugin .zip file](https://github.com/your-username/your-repo/releases/latest/download/your-plugin-name.zip)** to your computer.
+1. **[Download the plugin .zip file](https://github.com/omidnikrah/figma-sprite-generator/releases/download/v1.0.2/figma-sprite-generator-1.0.2.zip)** to your computer.
 2. Unzip the file to reveal the plugin folder.
 3. In Figma, head to `Plugins` > `Development` > `Import plugin from manifest...`.
 4. Choose the `manifest.json` file from the unzipped folder.

@@ -1,6 +1,6 @@
 import { showUI } from "@create-figma-plugin/utilities";
 
-import { RatioItem } from "@src/components";
+import type { RatioItem } from "@src/components";
 import { Layout } from "@src/constants";
 
 const updateSelectionCount = () => {
