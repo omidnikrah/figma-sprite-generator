@@ -1,5 +1,6 @@
 import { showUI } from "@create-figma-plugin/utilities";
 
+import { RatioItem } from "@src/components";
 import { Layout } from "@src/constants";
 
 const updateSelectionCount = () => {
@@ -7,7 +8,7 @@ const updateSelectionCount = () => {
   figma.ui.postMessage({ type: "selection-change", data: { selectedItemsCount: selectedItems } });
 };
 
-const handleCreateSprite = async () => {
+const handleCreateSprite = async (ratio: RatioItem["value"]) => {
   const selectedNodes = figma.currentPage.selection;
 
   if (selectedNodes.length === 0) {
@@ -15,7 +16,7 @@ const handleCreateSprite = async () => {
     return;
   }
 
-  const { exportedImages, iconsData, hasDuplicatedNames } = await processSelectedNodes(selectedNodes);
+  const { exportedImages, iconsData, hasDuplicatedNames } = await processSelectedNodes(selectedNodes, ratio);
 
   if (hasDuplicatedNames) {
     figma.ui.postMessage({ type: "duplicate-name-error", data: { message: "The name of the icons must be unique!" } });
@@ -24,12 +25,11 @@ const handleCreateSprite = async () => {
   }
 };
 
-const processSelectedNodes = async (selectedNodes: readonly SceneNode[]) => {
-  let totalWidth = 0;
-  let maxHeight = 0;
+const processSelectedNodes = async (selectedNodes: readonly SceneNode[], ratio: RatioItem["value"]) => {
   const iconsData: IconsData = {};
   const exportedImages: ExportedImages = [];
   let hasDuplicatedNames = false;
+  let index = 0;
 
   for (const node of selectedNodes) {
     if ("exportAsync" in node && "name" in node) {
@@ -42,16 +42,21 @@ const processSelectedNodes = async (selectedNodes: readonly SceneNode[]) => {
         break;
       }
 
-      iconsData[node.name] = {
-        x: totalWidth + Layout.ICONS_PADDING,
-        y: Layout.ICONS_PADDING,
-        width,
-        height,
-      };
+      const row = Math.floor(index / Layout.ICONS_PER_ROW);
+      const col = index % Layout.ICONS_PER_ROW;
 
-      totalWidth += width + Layout.ICONS_PADDING;
-      maxHeight = Math.max(maxHeight, height + Layout.ICONS_PADDING);
+      const scaledWidth = width * ratio;
+      const scaledHeight = height * ratio;
+
+      iconsData[node.name] = {
+        x: col * (scaledWidth + Layout.ICONS_PADDING),
+        y: row * (scaledHeight + Layout.ICONS_PADDING),
+        width: scaledWidth,
+        height: scaledHeight,
+        pixelRatio: ratio,
+      };
     }
+    index++;
   }
 
   return { exportedImages, iconsData, hasDuplicatedNames };
@@ -62,7 +67,7 @@ export default function () {
 
   figma.ui.onmessage = async msg => {
     if (msg.type === "create-sprite") {
-      await handleCreateSprite();
+      await handleCreateSprite(msg.data.ratio);
     }
   };
 

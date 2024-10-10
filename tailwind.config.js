@@ -2,13 +2,13 @@
 export default {
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
-    colors: {
-      black: "#1A1B20",
-      white: "#FFFFFF",
-      red: "#db2f2f",
-      transparent: "transparent",
-    },
     extend: {
+      colors: {
+        black: "#1A1B20",
+        white: "#FFFFFF",
+        red: "#db2f2f",
+        transparent: "transparent",
+      },
       animation: {
         rotation: "rotation 1s linear infinite",
       },

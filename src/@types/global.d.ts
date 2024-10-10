@@ -3,6 +3,7 @@ interface IconData {
   y: number;
   width: number;
   height: number;
+  pixelRatio: number;
 }
 
 type IconsData = Record<string, IconData>;

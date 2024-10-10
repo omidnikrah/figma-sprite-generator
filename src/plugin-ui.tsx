@@ -2,7 +2,9 @@ import { render } from "@create-figma-plugin/ui";
 import { Fragment, useEffect, useState } from "preact/compat";
 import { twMerge } from "tailwind-merge";
 
-import { Loading, ReadyState, SelectingState } from "@src/components";
+import { Loading, ReadyState, SelectingState, RatioSelect } from "@src/components";
+import type { RatioItem } from "@src/components";
+import { DEFAULT_RATIO } from "@src/configs";
 import { Layout } from "@src/constants";
 import { calculateMaxDimensions } from "@src/helpers";
 import { FileService } from "@src/services";
@@ -18,6 +20,7 @@ enum PLUGIN_STATUS {
 const SpritePlugin = () => {
   const [selectedIconsCount, setSelectedItemsCount] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [ratio, setRatio] = useState<RatioItem["value"]>(DEFAULT_RATIO.value);
   const [status, setStatus] = useState<PLUGIN_STATUS>(PLUGIN_STATUS.INIT);
 
   const createCanvas = (width: number, height: number): HTMLCanvasElement => {
@@ -34,8 +37,6 @@ const SpritePlugin = () => {
     exportedImages: Uint8Array[],
     iconsData: IconsData,
   ) => {
-    const iconsPerRow = Layout.ICONS_PER_ROW;
-    const padding = Layout.ICONS_PADDING;
     const iconNames = Object.keys(iconsData);
 
     const imagePromises = exportedImages.map((image, index) => {
@@ -48,12 +49,7 @@ const SpritePlugin = () => {
           const iconName = iconNames[index];
           const iconInfo = iconsData[iconName];
 
-          const row = Math.floor(index / iconsPerRow);
-          const col = index % iconsPerRow;
-          const x = col * (iconInfo.width + padding);
-          const y = row * (iconInfo.height + padding);
-
-          ctx.drawImage(img, x, y, iconInfo.width, iconInfo.height);
+          ctx.drawImage(img, iconInfo.x, iconInfo.y, iconInfo.width, iconInfo.height);
 
           resolve();
         };
@@ -105,6 +101,7 @@ const SpritePlugin = () => {
     switch (pluginMessage.type) {
       case "selection-change":
         setSelectedItemsCount(pluginMessage.data.selectedItemsCount);
+        setErrorMessage("");
         break;
       case "sprite-created":
         await handleSpriteCreation(pluginMessage.data.exportedImages, pluginMessage.data.iconsData);
@@ -123,11 +120,25 @@ const SpritePlugin = () => {
   const handleGenerateAndDownload = () => {
     if (status === PLUGIN_STATUS.GENERATED) {
       setErrorMessage("");
-      setSelectedItemsCount(0);
       setStatus(PLUGIN_STATUS.INIT);
+      setRatio(DEFAULT_RATIO.value);
     } else {
-      parent.postMessage({ pluginMessage: { type: "create-sprite" } }, "*");
+      parent.postMessage(
+        {
+          pluginMessage: {
+            type: "create-sprite",
+            data: {
+              ratio,
+            },
+          },
+        },
+        "*",
+      );
     }
+  };
+
+  const handleRatioChange = (value: RatioItem["value"]) => {
+    setRatio(value);
   };
 
   useEffect(() => {
@@ -136,7 +147,7 @@ const SpritePlugin = () => {
 
       await handlePluginMessages(pluginMessage);
     };
-  }, []);
+  }, [ratio]);
 
   const isInit = status === PLUGIN_STATUS.INIT;
   const isGenerating = status === PLUGIN_STATUS.GENERATING;
@@ -149,12 +160,12 @@ const SpritePlugin = () => {
         {isGenerated && <ReadyState />}
       </div>
 
-      <div className="flex items-center justify-center">
-        {errorMessage && <span className="absolute -mt-20 block text-center text-base text-red">{errorMessage}</span>}
+      <div className="flex flex-col items-center justify-center">
+        {!!selectedIconsCount && <RatioSelect onChange={handleRatioChange} />}
 
         <button
           className={twMerge(
-            "flex h-12 w-full shrink-0 appearance-none items-center justify-center rounded-lg bg-black text-base text-white transition-all disabled:opacity-25",
+            "mt-3 flex h-12 w-full shrink-0 appearance-none items-center justify-center rounded-lg bg-black text-base text-white transition-all disabled:opacity-25",
             isGenerating && "bg-white text-black",
           )}
           disabled={!selectedIconsCount}
@@ -170,6 +181,8 @@ const SpritePlugin = () => {
 
           {isGenerated && "Start Again"}
         </button>
+
+        {errorMessage && <span className="mt-2 block text-center text-xs text-red">{errorMessage}</span>}
       </div>
     </section>
   );
